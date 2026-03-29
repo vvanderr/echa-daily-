@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Echa Daily - Pink Cute Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #ffe6f0 0%, #ffc0cb 100%);
+            font-family: 'Quicksand', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 24px 16px;
+            position: relative;
+        }
+
+        body::before {
+            content: "🌸";
+            position: absolute;
+            font-size: 60px;
+            top: 20px;
+            left: 20px;
+            opacity: 0.2;
+            transform: rotate(-15deg);
+        }
+
+        body::after {
+            content: "🎀";
+            position: absolute;
+            font-size: 70px;
+            bottom: 20px;
+            right: 20px;
+            opacity: 0.2;
+            transform: rotate(10deg);
+        }
+
+        .cute-card {
+            max-width: 500px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 55px;
+            box-shadow: 0 25px 50px -12px rgba(255, 105, 180, 0.4);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .cute-header {
+            background: linear-gradient(135deg, #ffb6c1 0%, #ff9eb5 100%);
+            padding: 28px 28px 24px 28px;
+            position: relative;
+        }
+
+        .cute-header::before {
+            content: "✨";
+            position: absolute;
+            font-size: 100px;
+            right: -20px;
+            top: -30px;
+            opacity: 0.2;
+        }
+
+        .title-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .echa-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .streak-pill {
+            background: rgba(255,255,255,0.35);
+            backdrop-filter: blur(4px);
+            padding: 8px 18px;
+            border-radius: 50px;
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .streak-number {
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .date-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .day-badge {
+            background: rgba(255,255,255,0.9);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            color: #ff6b8b;
+        }
+
+        .date-text {
+            background: rgba(255,255,255,0.7);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 14px;
+            color: #ff8aa8;
+        }
+
+        /* TASKS LIST - LANGSUNG MUNCUL */
+        .tasks-container {
+            padding: 24px 28px;
+            background: white;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #fff8fa;
+            border-radius: 100px;
+            padding: 14px 20px;
+            margin-bottom: 12px;
+            border: 2px solid #ffe2ea;
+            transition: all 0.2s;
+        }
+
+        .task-item:hover {
+            border-color: #ffb6c1;
+            background: #fff5f7;
+        }
+
+        .task-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex: 1;
+        }
+
+        .task-emoji {
+            font-size: 30px;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .task-name {
+            font-size: 17px;
+            font-weight: 600;
+            color: #6b4e5e;
+        }
+
+        .task-checkbox {
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            accent-color: #ff6b8b;
+            flex-shrink: 0;
+        }
+
+        .progress-section {
+            padding: 8px 28px 24px 28px;
+            background: white;
+            border-top: 1px solid #ffe2ea;
+        }
+
+        .progress-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: #c28aa8;
+        }
+
+        .progress-percent {
+            font-weight: 800;
+            font-size: 20px;
+            color: #ff6b8b;
+        }
+
+        .progress-bar-bg {
+            background: #ffe2ea;
+            border-radius: 30px;
+            height: 12px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            background: linear-gradient(90deg, #ffb6c1, #ff6b8b);
+            width: 0%;
+            height: 100%;
+            border-radius: 30px;
+            transition: width 0.3s;
+        }
+
+        .footer-actions {
+            padding: 8px 28px 20px 28px;
+            background: white;
+            display: flex;
+            justify-content: center;
+        }
+
+        .cute-btn {
+            background: #fff0f3;
+            border: 2px solid #ffd0dc;
+            padding: 12px 28px;
+            border-radius: 60px;
+            font-weight: 700;
+            color: #ff6b8b;
+            cursor: pointer;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .cute-btn:hover {
+            background: #ff6b8b;
+            color: white;
+        }
+
+        .motivation-note {
+            text-align: center;
+            font-size: 12px;
+            color: #e5aac2;
+            padding: 16px 28px 28px 28px;
+            background: white;
+            border-top: 1px solid #ffeef2;
+        }
+
+        @media (max-width: 480px) {
+            .task-emoji { font-size: 24px; min-width: 40px; }
+            .task-name { font-size: 14px; }
+            .tasks-container { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="cute-card">
+        <div class="cute-header">
+            <div class="title-section">
+                <div class="echa-title">
+                    <span>🎀</span>
+                    Echa Daily
+                    <span>🌸</span>
+                </div>
+                <div class="streak-pill">
+                    <span>❤️</span>
+                    <span class="streak-number" id="streakCount">0</span>
+                    <span>hari</span>
+                </div>
+            </div>
+            <div class="date-info">
+                <div class="day-badge" id="dayLabel">Day 1</div>
+                <div class="date-text" id="dateDisplay"></div>
+            </div>
+        </div>
+
+        <!-- TASK LIST LANGSUNG DI SINI - PASTI MUNCUL -->
+        <div class="tasks-container" id="tasksList">
+            <!-- Task 1 -->
+            <div class="task-item">
+                <div class="task-left">
+                    <span class="task-emoji">🥛</span>
+                    <span class="task-name">Minum susu</span>
+                </div>
+                <input type="checkbox" class="task-checkbox" data-task="susu" id="task_susu">
+            </div>
+            <!-- Task 2 -->
+            <div class="task-item">
+                <div class="task-left">
+                    <span class="task-emoji">🍗</span>
+                    <span class="task-name">Makan protein</span>
+                </div>
+                <input type="checkbox" class="task-checkbox" data-task="protein" id="task_protein">
+            </div>
+            <!-- Task 3 -->
+            <div class="task-item">
+                <div class="task-left">
+                    <span class="task-emoji">🏋️‍♀️</span>
+                    <span class="task-name">Olahraga</span>
+                </div>
+                <input type="checkbox" class="task-checkbox" data-task="olahraga" id="task_olahraga">
+            </div>
+            <!-- Task 4 -->
+            <div class="task-item">
+                <div class="task-left">
+                    <span class="task-emoji">🧴🌸</span>
+                    <span class="task-name">Lotion pagi</span>
+                </div>
+                <input type="checkbox" class="task-checkbox" data-task="lotion_pagi" id="task_lotion_pagi">
+            </div>
+            <!-- Task 5 -->
+            <div class="task-item">
+                <div class="task-left">
+                    <span class="task-emoji">🌙💖</span>
+                    <span class="task-name">Lotion malam</span>
+                </div>
+                <input type="checkbox" class="task-checkbox" data-task="lotion_malam" id="task_lotion_malam">
+            </div>
+        </div>
+
+        <div class="progress-section">
+            <div class="progress-stats">
+                <span>💕 Hari ini</span>
+                <span><span id="completedCount">0</span>/<span id="totalCount">5</span> selesai · <span id="percentText" class="progress-percent">0%</span></span>
+            </div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <div class="footer-actions">
+            <button class="cute-btn" id="resetBtn">
+                <span>💜</span> Reset hari ini
+            </button>
+        </div>
+        <div class="motivation-note">
+            ⭐ Streak bertahan jika semua task selesai hari ini 🌸<br>
+            😍 Kamu pasti bisa, Echa! 😍
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
+    <script>
+        // ============ DATA ============
+        const tasks = ['susu', 'protein', 'olahraga', 'lotion_pagi', 'lotion_malam'];
+        let taskStatus = {
+            susu: false,
+            protein: false,
+            olahraga: false,
+            lotion_pagi: false,
+            lotion_malam: false
+        };
+        let streak = 0;
+        let currentDate = '';
+        
+        // ============ FUNGSI ============
+        function getToday() {
+            const d = new Date();
+            return `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
+        }
+        
+        function getStorageDate() {
+            const d = new Date();
+            return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+        }
+        
+        function updateProgress() {
+            const completed = tasks.filter(t => taskStatus[t] === true).length;
+            const total = tasks.length;
+            const percent = Math.round((completed / total) * 100);
+            
+            document.getElementById('completedCount').innerText = completed;
+            document.getElementById('totalCount').innerText = total;
+            document.getElementById('percentText').innerHTML = `${percent}%`;
+            document.getElementById('progressFill').style.width = `${percent}%`;
+            document.getElementById('streakCount').innerText = streak;
+            
+            // Update checkbox visual
+            tasks.forEach(t => {
+                const cb = document.getElementById(`task_${t}`);
+                if (cb) cb.checked = taskStatus[t];
+            });
+            
+            // Confetti kalau semua selesai
+            if (completed === total && completed > 0) {
+                canvasConfetti({
+                    particleCount: 100,
+                    spread: 60,
+                    origin: { y: 0.6 },
+                    colors: ['#ffb6c1', '#ff8aaa', '#ff6b8b']
+                });
+            }
+        }
+        
+        function saveToStorage() {
+            const data = {
+                tasks: taskStatus,
+                streak: streak,
+                lastDate: getStorageDate()
+            };
+            localStorage.setItem('echa_cute_data', JSON.stringify(data));
+        }
+        
+        function loadFromStorage() {
+            const saved = localStorage.getItem('echa_cute_data');
+            const todayStorage = getStorageDate();
+            const lastDate = localStorage.getItem('echa_cute_lastdate');
+            
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    
+                    // Cek apakah hari berganti
+                    if (lastDate && lastDate !== todayStorage) {
+                        // Cek apakah kemarin semua selesai
+                        const yesterdayComplete = tasks.every(t => data.tasks?.[t] === true);
+                        if (yesterdayComplete) {
+                            streak = (data.streak || 0) + 1;
+                        } else {
+                            streak = 0;
+                        }
+                        // Reset task untuk hari ini
+                        tasks.forEach(t => taskStatus[t] = false);
+                    } else {
+                        // Hari sama, pakai data yang ada
+                        if (data.tasks) {
+                            tasks.forEach(t => {
+                                if (data.tasks[t] !== undefined) taskStatus[t] = data.tasks[t];
+                            });
+                        }
+                        streak = data.streak || 0;
+                    }
+                } catch(e) {
+                    console.log('error load', e);
+                    tasks.forEach(t => taskStatus[t] = false);
+                    streak = 0;
+                }
+            } else {
+                tasks.forEach(t => taskStatus[t] = false);
+                streak = 0;
+            }
+            
+            // Update last date
+            localStorage.setItem('echa_cute_lastdate', todayStorage);
+        }
+        
+        function updateDayAndDate() {
+            // Hitung day number dari first use
+            let firstDate = localStorage.getItem('echa_cute_firstdate');
+            const today = getToday();
+            
+            if (!firstDate) {
+                firstDate = today;
+                localStorage.setItem('echa_cute_firstdate', firstDate);
+            }
+            
+            // Hitung selisih hari
+            const [d1, m1, y1] = firstDate.split('/');
+            const [d2, m2, y2] = today.split('/');
+            const date1 = new Date(y1, m1-1, d1);
+            const date2 = new Date(y2, m2-1, d2);
+            const diffDays = Math.floor((date2 - date1) / (1000 * 60 * 60 * 24));
+            const dayNumber = diffDays + 1;
+            
+            document.getElementById('dayLabel').innerHTML = `Day ${dayNumber}`;
+            document.getElementById('dateDisplay').innerHTML = today;
+        }
+        
+        function handleCheckboxChange(taskId) {
+            taskStatus[taskId] = !taskStatus[taskId];
+            updateProgress();
+            saveToStorage();
+        }
+        
+        function resetAll() {
+            tasks.forEach(t => taskStatus[t] = false);
+            updateProgress();
+            saveToStorage();
+        }
+        
+        // ============ INIT ============
+        function init() {
+            // Load data dari storage
+            const todayStorage = getStorageDate();
+            const lastDate = localStorage.getItem('echa_cute_lastdate');
+            const saved = localStorage.getItem('echa_cute_data');
+            
+            if (saved && lastDate && lastDate !== todayStorage) {
+                // Hari berganti
+                try {
+                    const data = JSON.parse(saved);
+                    const yesterdayComplete = tasks.every(t => data.tasks?.[t] === true);
+                    if (yesterdayComplete) {
+                        streak = (data.streak || 0) + 1;
+                    } else {
+                        streak = 0;
+                    }
+                } catch(e) {
+                    streak = 0;
+                }
+                tasks.forEach(t => taskStatus[t] = false);
+            } else if (saved && lastDate === todayStorage) {
+                // Hari sama
+                try {
+                    const data = JSON.parse(saved);
+                    if (data.tasks) {
+                        tasks.forEach(t => {
+                            if (data.tasks[t] !== undefined) taskStatus[t] = data.tasks[t];
+                        });
+                    }
+                    streak = data.streak || 0;
+                } catch(e) {
+                    tasks.forEach(t => taskStatus[t] = false);
+                    streak = 0;
+                }
+            } else {
+                tasks.forEach(t => taskStatus[t] = false);
+                streak = 0;
+            }
+            
+            localStorage.setItem('echa_cute_lastdate', todayStorage);
+            
+            // Simpan ke storage
+            saveToStorage();
+            
+            // Update UI
+            updateProgress();
+            updateDayAndDate();
+            
+            // Pasang event listener ke semua checkbox
+            tasks.forEach(taskId => {
+                const cb = document.getElementById(`task_${taskId}`);
+                if (cb) {
+                    cb.addEventListener('change', function() {
+                        handleCheckboxChange(taskId);
+                    });
+                }
+            });
+            
+            // Reset button
+            document.getElementById('resetBtn').addEventListener('click', function() {
+                resetAll();
+            });
+        }
+        
+        // Jalankan
+        init();
+    </script>
+</body>
+</html>
