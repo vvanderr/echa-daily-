@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Echa Bubble Pop - Pink Cute Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(135deg, #ffe6f0 0%, #ffc0cb 100%);
+            font-family: 'Quicksand', 'Segoe UI', 'Poppins', sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 550px;
+            width: 100%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 55px;
+            overflow: hidden;
+            box-shadow: 0 25px 45px rgba(255, 105, 180, 0.25);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ffb6c1 0%, #ff9eb5 100%);
+            padding: 28px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-between;
+            padding: 18px 25px;
+            background: #fff5f7;
+            border-bottom: 2px solid #ffe0e8;
+        }
+
+        .score-card {
+            text-align: center;
+            background: white;
+            padding: 8px 15px;
+            border-radius: 40px;
+            min-width: 90px;
+        }
+
+        .score-label {
+            font-size: 11px;
+            color: #c28aa8;
+            font-weight: 600;
+        }
+
+        .score-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: #ff6b8b;
+        }
+
+        .timer-card {
+            text-align: center;
+            background: linear-gradient(135deg, #ffb6c1, #ff9eb5);
+            padding: 8px 20px;
+            border-radius: 40px;
+            min-width: 100px;
+        }
+
+        .timer-label {
+            font-size: 10px;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .timer-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: white;
+        }
+
+        .game-area {
+            position: relative;
+            min-height: 450px;
+            background: linear-gradient(180deg, #ffeef2 0%, #fff5f7 100%);
+            overflow: hidden;
+        }
+
+        .countdown {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            font-size: 80px;
+            font-weight: 800;
+            color: #ff6b8b;
+        }
+
+        .balloon {
+            position: absolute;
+            cursor: pointer;
+            z-index: 20;
+            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.1));
+            transition: transform 0.05s;
+        }
+
+        .balloon:active {
+            transform: scale(0.9);
+        }
+
+        .balloon-emoji {
+            font-size: 55px;
+            display: block;
+        }
+
+        .pop-text {
+            position: fixed;
+            font-size: 28px;
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 100;
+            animation: popFly 0.5s ease-out forwards;
+        }
+
+        @keyframes popFly {
+            0% { transform: scale(0.3); opacity: 1; }
+            50% { transform: scale(1.3); }
+            100% { transform: translateY(-50px) scale(0.8); opacity: 0; }
+        }
+
+        /* GLITTER PARTICLE */
+        .glitter {
+            position: fixed;
+            font-size: 16px;
+            pointer-events: none;
+            z-index: 99;
+            animation: glitterFly 0.6s ease-out forwards;
+        }
+
+        @keyframes glitterFly {
+            0% { transform: translate(0, 0) scale(0.5); opacity: 1; }
+            100% { transform: translate(var(--dx, 40px), var(--dy, -60px)) scale(0); opacity: 0; }
+        }
+
+        .control-buttons {
+            padding: 20px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            background: white;
+            border-top: 1px solid #ffe0e8;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #ff6b8b, #ff8aaa);
+            border: none;
+            padding: 14px 28px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 15px;
+            color: white;
+            cursor: pointer;
+            font-family: inherit;
+            box-shadow: 0 6px 15px rgba(255,105,180,0.3);
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-reset {
+            background: #fff0f3;
+            color: #ff6b8b;
+            border: 2px solid #ffd0dc;
+            box-shadow: none;
+        }
+
+        .game-status {
+            text-align: center;
+            padding: 15px;
+            font-size: 13px;
+            color: #ff8aaa;
+            background: white;
+            border-top: 1px solid #ffe0e8;
+            font-weight: 500;
+        }
+
+        .mascot {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background: #ff6b8b;
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(255,105,180,0.4);
+            border: 3px solid white;
+            z-index: 100;
+        }
+
+        .mascot span {
+            font-size: 36px;
+        }
+
+        .speech {
+            position: fixed;
+            bottom: 155px;
+            right: 95px;
+            background: white;
+            padding: 10px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #ff6b8b;
+            max-width: 180px;
+            display: none;
+            z-index: 101;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 1px solid #ffd0dc;
+        }
+
+        .speech::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            right: 20px;
+            border-width: 8px 8px 0 8px;
+            border-style: solid;
+            border-color: white transparent transparent;
+        }
+
+        @media (max-width: 550px) {
+            .balloon-emoji { font-size: 45px; }
+            .score-value, .timer-value { font-size: 26px; }
+            .game-area { min-height: 400px; }
+            .mascot { width: 55px; height: 55px; bottom: 70px; right: 16px; }
+            .mascot span { font-size: 32px; }
+            .speech { bottom: 140px; right: 80px; font-size: 11px; max-width: 150px; }
+            .btn { padding: 10px 20px; font-size: 13px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <span>🎈</span>
+                Echa Bubble Pop
+                <span>💗</span>
+            </h1>
+        </div>
+
+        <div class="score-board">
+            <div class="score-card">
+                <div class="score-label">🎯 SKOR</div>
+                <div class="score-value" id="scoreDisplay">0</div>
+            </div>
+            <div class="timer-card">
+                <div class="timer-label">⏱️ WAKTU</div>
+                <div class="timer-value" id="timerDisplay">30</div>
+            </div>
+            <div class="score-card">
+                <div class="score-label">🏆 TERBAIK</div>
+                <div class="score-value" id="highScoreDisplay">0</div>
+            </div>
+        </div>
+
+        <div class="game-area" id="gameArea"></div>
+
+        <div class="control-buttons">
+            <button class="btn" id="startBtn">🎈 MULAI GAME 🎈</button>
+            <button class="btn btn-reset" id="resetBtn">🔄 Reset Skor Terbaik</button>
+        </div>
+
+        <div class="game-status" id="statusText">
+            ✨ Klik Mulai Game, lalu klik balon lucunya! ✨
+        </div>
+    </div>
+
+    <div class="mascot" id="mascot">
+        <span>🐣</span>
+    </div>
+    <div class="speech" id="speechBubble">Halo Echa! 💕</div>
+
+    <script>
+        // GAME STATE
+        let score = 0;
+        let best = 0;
+        let time = 30;
+        let playing = false;
+        let timerInt = null;
+        let balloonInt = null;
+        let speechTimeout = null;
+
+        // DOM
+        const gameArea = document.getElementById('gameArea');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const highScoreDisplay = document.getElementById('highScoreDisplay');
+        const statusText = document.getElementById('statusText');
+        const speechBubble = document.getElementById('speechBubble');
+        const mascot = document.getElementById('mascot');
+        const startBtn = document.getElementById('startBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        const balloonTypes = ['🎈', '🎀', '🌸', '💗', '🐣', '✨'];
+
+        // Messages
+        const milestones = {
+            10: 'Kamu hebat! ✨',
+            20: 'Wah jago banget! 💗',
+            30: 'Ciee pro player! 🎈',
+            40: 'Kamu luar biasa! 🌸',
+            50: 'Legendary! Aku bangga! 🎉'
+        };
+
+        const randomMsgs = [
+            'Klik balonnya! Seru! 🎈',
+            'Wah hebat! Terus klik! 💕',
+            'Semangat! Pecahkan balonnya! 🎯',
+            'Skor kamu keren! ✨',
+            'Kamu jago banget! 💗'
+        ];
+
+        function showMsg(text) {
+            speechBubble.innerText = text;
+            speechBubble.style.display = 'block';
+            if (speechTimeout) clearTimeout(speechTimeout);
+            speechTimeout = setTimeout(() => {
+                speechBubble.style.display = 'none';
+            }, 2500);
+        }
+
+        function randomMsg() {
+            const msg = randomMsgs[Math.floor(Math.random() * randomMsgs.length)];
+            showMsg(msg);
+        }
+
+        function updateUI() {
+            scoreDisplay.innerText = score;
+            timerDisplay.innerText = time;
+            highScoreDisplay.innerText = best;
+        }
+
+        // ============ GLITTER PARTICLE EFFECT ============
+        function createGlitter(x, y) {
+            const glitters = ['✨', '⭐', '💖', '🌸', '💕', '🌟', '💗'];
+            const jumlah = 8;
+            
+            for (let i = 0; i < jumlah; i++) {
+                setTimeout(() => {
+                    const glitter = document.createElement('div');
+                    glitter.className = 'glitter';
+                    glitter.innerHTML = glitters[Math.floor(Math.random() * glitters.length)];
+                    
+                    // Random direction
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = 40 + Math.random() * 40;
+                    const dx = Math.cos(angle) * speed;
+                    const dy = Math.sin(angle) * speed - 30;
+                    
+                    glitter.style.left = (x + (Math.random() - 0.5) * 40) + 'px';
+                    glitter.style.top = (y + (Math.random() - 0.5) * 40) + 'px';
+                    glitter.style.fontSize = (14 + Math.random() * 12) + 'px';
+                    glitter.style.setProperty('--dx', dx + 'px');
+                    glitter.style.setProperty('--dy', dy + 'px');
+                    
+                    document.body.appendChild(glitter);
+                    setTimeout(() => glitter.remove(), 600);
+                }, i * 40);
+            }
+        }
+
+        // POP EFFECT
+        function popEffect(x, y, isGold) {
+            const pop = document.createElement('div');
+            pop.className = 'pop-text';
+            pop.innerText = isGold ? '✨ +3 ✨' : 'POP! 🎈';
+            pop.style.left = (x - 30) + 'px';
+            pop.style.top = (y - 35) + 'px';
+            pop.style.color = isGold ? '#ffaa00' : '#ff6b8b';
+            document.body.appendChild(pop);
+            setTimeout(() => pop.remove(), 500);
+        }
+
+        // CREATE BALLOON
+        function createBalloon() {
+            if (!playing) return;
+            
+            const rect = gameArea.getBoundingClientRect();
+            if (rect.width === 0) return;
+            
+            const isGold = Math.random() < 0.15;
+            const balloon = document.createElement('div');
+            balloon.className = 'balloon';
+            
+            const emoji = isGold ? '🏆' : balloonTypes[Math.floor(Math.random() * balloonTypes.length)];
+            balloon.innerHTML = `<div class="balloon-emoji">${emoji}</div>`;
+            
+            const maxX = Math.max(rect.width - 70, 40);
+            const x = 20 + Math.random() * (maxX - 20);
+            const maxY = Math.max(rect.height - 90, 50);
+            const y = 20 + Math.random() * (maxY - 20);
+            
+            balloon.style.left = x + 'px';
+            balloon.style.top = y + 'px';
+            
+            balloon.onclick = (e) => {
+                e.stopPropagation();
+                if (!playing) return;
+                
+                const br = balloon.getBoundingClientRect();
+                const cx = br.left + br.width / 2;
+                const cy = br.top + br.height / 2;
+                
+                const points = isGold ? 3 : 1;
+                score += points;
+                updateUI();
+                
+                popEffect(cx, cy, isGold);
+                createGlitter(cx, cy);
+                balloon.remove();
+                
+                if (milestones[score]) {
+                    showMsg(milestones[score]);
+                }
+            };
+            
+            gameArea.appendChild(balloon);
+            
+            setTimeout(() => {
+                if (balloon.parentNode) balloon.remove();
+            }, 3000);
+        }
+
+        // COUNTDOWN
+        function doCountdown(callback) {
+            let count = 3;
+            const div = document.createElement('div');
+            div.className = 'countdown';
+            div.innerText = count;
+            gameArea.appendChild(div);
+            
+            const interval = setInterval(() => {
+                count--;
+                if (count > 0) {
+                    div.innerText = count;
+                } else if (count === 0) {
+                    div.innerText = 'GO! 🎈';
+                    setTimeout(() => {
+                        div.remove();
+                        callback();
+                    }, 500);
+                    clearInterval(interval);
+                }
+            }, 1000);
+        }
+
+        // END GAME
+        function endGame() {
+            playing = false;
+            if (timerInt) clearInterval(timerInt);
+            if (balloonInt) clearInterval(balloonInt);
+            
+            const balloons = gameArea.querySelectorAll('.balloon');
+            balloons.forEach(b => b.remove());
+            
+            if (score > best) {
+                best = score;
+                localStorage.setItem('bubbleBest', best);
+                highScoreDisplay.innerText = best;
+                statusText.innerHTML = `🎉 SKOR BARU! ${score} poin! 🎉`;
+                showMsg(`Rekor baru! ${score} poin! Hebat! 🎉`);
+            } else {
+                statusText.innerHTML = `✨ GAME SELESAI! Skor: ${score} poin ✨`;
+                if (score >= 20) showMsg(`Skor ${score} poin! Hebat! Main lagi yuk! 🎈`);
+                else if (score >= 10) showMsg(`Skor ${score} poin! Bagus! Coba lagi! 💪`);
+                else showMsg(`Skor ${score} poin. Ayo coba lagi! Semangat! 🎈`);
+            }
+        }
+
+        // START GAME
+        function startGame() {
+            if (playing) return;
+            
+            doCountdown(() => {
+                score = 0;
+                time = 30;
+                updateUI();
+                playing = true;
+                statusText.innerHTML = '🎈 GAME BERJALAN! Klik balonnya! 🎈';
+                
+                const balloons = gameArea.querySelectorAll('.balloon');
+                balloons.forEach(b => b.remove());
+                
+                timerInt = setInterval(() => {
+                    if (time > 0 && playing) {
+                        time--;
+                        timerDisplay.innerText = time;
+                        if (time === 5) showMsg('Waktu hampir habis! Cepat! ⏱️');
+                        if (time === 0) endGame();
+                    }
+                }, 1000);
+                
+                balloonInt = setInterval(() => {
+                    createBalloon();
+                    if (Math.random() > 0.7 && playing) {
+                        setTimeout(() => createBalloon(), 150);
+                    }
+                }, 800);
+                
+                showMsg('Mulai! Klik balonnya! Ada balon emas 🏆 +3 poin! 🎈💕');
+            });
+        }
+
+        // RESET BEST SCORE
+        function resetBest() {
+            best = 0;
+            localStorage.setItem('bubbleBest', best);
+            highScoreDisplay.innerText = best;
+            showMsg('Skor terbaik direset! Ayo buat rekor baru! ✨');
+        }
+
+        // LOAD BEST SCORE
+        function loadBest() {
+            const saved = localStorage.getItem('bubbleBest');
+            if (saved) {
+                best = parseInt(saved);
+                highScoreDisplay.innerText = best;
+            }
+        }
+
+        // MASCOT
+        mascot.onclick = () => {
+            randomMsg();
+            mascot.style.transform = 'scale(0.9)';
+            setTimeout(() => { mascot.style.transform = ''; }, 150);
+        };
+
+        setInterval(() => {
+            if (!playing && Math.random() > 0.7) randomMsg();
+        }, 40000);
+
+        // INIT
+        loadBest();
+        updateUI();
+        
+        startBtn.onclick = startGame;
+        resetBtn.onclick = resetBest;
+        
+        setTimeout(() => {
+            showMsg('Halo Echa! Klik Mulai Game, pecahkan balonnya! 🎈');
+        }, 1000);
+    </script>
+</body>
+</html>
